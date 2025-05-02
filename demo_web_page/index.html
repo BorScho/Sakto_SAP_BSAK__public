@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONNX Model Inference</title>
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+</head>
+<body>
+    <h2>ONNX Model "Sachkonto" - Prediction</h2>
+    
+    <label for="input1">Buchungskreis:</label>
+    <input type="text" id="input1"><br><br>
+
+    <label for="input2">Lieferant:</label>
+    <input type="text" id="input2"><br><br>
+
+    <label for="input3">Steuerkennzeichen:</label>
+    <input type="text" id="input3"><br><br>
+
+    <button onclick="runModel()">Predict</button>
+
+    <h3>Sachkonto: <span id="output">Waiting...</span></h3>
+    <h3>The three most probable "Sachkonten":</h3>
+    <div id="top-values">Waiting...
+        <!-- here the top 3 probabilities will be shown -->
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
