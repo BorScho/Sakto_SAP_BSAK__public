@@ -1,3 +1,5 @@
+# Sakto_SAP_BSAK__public
+xgboost for sakto value help from SAP table BSAK
 
 Purpose:
 Prediction of "Sachkonto" (General ledger account) - from a few columns based on trainingsdata from SAP table BSAK
