@@ -25,7 +25,8 @@ def plot_confusion_matrix(y_test, y_pred, labels, cmap="Blues"):
     plt.show()
 
 
-def plot_top_k_confusion_matrix(y_test, y_pred_prob, labels, top_k=3, cmap="Blues", show_off_top_k_info=False):
+def plot_top_k_confusion_matrix(y_test, y_pred_prob, labels, top_k=3, cmap="Blues", show_off_top_k_info=False, 
+                                count_as_true=True, figsize_x=8, figsize_y=6):
     """ 
     Plot a confusion map based on top-k-accuracy.
     Hit is, when y_test is in the top k of y_pred_prob. 
@@ -33,34 +34,48 @@ def plot_top_k_confusion_matrix(y_test, y_pred_prob, labels, top_k=3, cmap="Blue
     the support. "Set show_off_top_k_info" to "true" to get an extra column, showing the count for the off-top-k.
 
     Input:
-    y_test : ground truth data-labels
-    y_pred_prob : the probabilites for each class; we sort the probabilites and take the top k
-    labels : the labels for the axises of the matrix (not the data-labels)
+    y_test              : ground truth data-labels
+    y_pred_prob         : the probabilites for each class; we sort the probabilites and take the top k
+    labels              : the labels to plot on the confusion matrix (not the data-labels)
     show_off_top_k_info : it true, displays an extra column in the matrix to show the number of datapoints off top-k
+    count_as_true       : if set to "True": if y_true is in the top-k, then count this as a correct y_true-classification. 
+                            If set to "False" it is counted as a correct classification for the most probable class of this prediction
     """
     k = top_k
-    if show_off_top_k_info: # if true append one off-top column to the confusion matrix
-        xticklabels = np.append(labels.astype(str), [f"off_top_{k}"]) # if y_true is not in the top_k it is "off_top_k"
+    if type(labels[0]) != str :
+        labels = list(map(str,labels))
+    
+    # if true append one off-top column to the confusion matrix:
+    if show_off_top_k_info: 
+        xticklabels = np.append(labels, [f"off_top_{k}"]) # if y_true is not in the top_k it is "off_top_k" ...
     else:
-        xticklabels = labels.astype(str)
-    yticklabels = labels.astype(str)
-    top_k_preds = np.argsort(y_pred_prob, axis=1 )[:, ::-1][:, :k] # sort probabilites asscending, take top k
+        xticklabels = labels
+    yticklabels = labels
+
+    # sort indices according to ascending probabilites, invert sorting, take the first k:
+    top_k_preds = np.argsort(y_pred_prob, axis=1 )[:, ::-1][:, :k] 
+    
     # define the top-k confusion matrix:
     conf_matrix = np.zeros((len(np.unique(y_test)), len(xticklabels)), dtype=int)
+    
     # count how often the true class is contained in the top-k predictions:
     for i in range(len(y_test)):
         true_class = y_test[i]
         # check if the true class is contained in the top-k predictions for this instance:
-        if true_class in top_k_preds[i]:
-            pred_class = top_k_preds[i][0]  # the first (i.e. most probable) prediction is chosen as the dominant class
-            conf_matrix[true_class, pred_class] += 1
+        if true_class in top_k_preds[i]: # that is the index-number of the prediction-vector has to be equal to the class-label.
+            if count_as_true:
+                conf_matrix[true_class, true_class] += 1
+            else:
+                pred_class = top_k_preds[i][0]  # the first (i.e. most probable) prediction is chosen as the dominant class
+                conf_matrix[true_class, pred_class] += 1
         else:
             conf_matrix[true_class, len(xticklabels) - 1] += 1
-            if show_off_top_k_info:
-                print(f"Off-top-{k}:")
-                print(labels[true_class], labels[top_k_preds[i]])
+            """ if show_off_top_k_info:
+                print(f"Off-top-{k}:") #debug
+                print(top_k_preds[i]) #debug
+                print(labels[true_class], np.array(labels)[top_k_preds[i]]) #debug """
     # vizualize the matrix:
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=(figsize_x, figsize_y))
     sns.heatmap(conf_matrix, annot=True, fmt="d", cmap=cmap, xticklabels=xticklabels, yticklabels=yticklabels)
     #sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", xticklabels=np.unique(y_train), yticklabels=np.unique(y_train))
     plt.xlabel("Predicted Class")
