@@ -1,5 +1,3 @@
-# Sakto_SAP_BSAK__public
-xgboost for sakto value help from SAP table BSAK
 
 Purpose:
 Prediction of "Sachkonto" (General ledger account) - from a few columns based on trainingsdata from SAP table BSAK
@@ -37,7 +35,9 @@ dependencies:
   - xgboost=1.4.2
   - pip
   
-Thereafter activate the environment and install the boruta and onnxmltool with: pip install boruta onnxmltools==1.7.0
+Thereafter activate the environment and install the boruta and onnxmltool with: pip install boruta onnxmltools==1.7.0 <-- this worked...
+BUT there seems to be a little back and forth between the required packages and versions - so expect some work with updates, Chatgpt is your friend...
+The requirements.txt contains all the packages and versions that HAVE worked. It has been created by: "pip freeze > requirements.txt" in a command shell with activated CondaSapBSAKEnv environment.
 
 
 ## Catboost Environment:
